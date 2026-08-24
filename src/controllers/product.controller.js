@@ -133,6 +133,8 @@ exports.createProduct = async (req, res, next) => {
             thumbs,
             description,
             details,
+            stock,
+            countInStock,
             stockQty,
             inStock,
             featured
@@ -170,6 +172,12 @@ exports.createProduct = async (req, res, next) => {
             else resolvedGem = 'Diamond';
         }
 
+        const resolvedStock = stock !== undefined
+            ? Number(stock)
+            : (countInStock !== undefined
+                ? Number(countInStock)
+                : (stockQty !== undefined ? Number(stockQty) : 10));
+
         const product = await Product.create({
             customId: customId || id,
             name,
@@ -185,8 +193,10 @@ exports.createProduct = async (req, res, next) => {
             thumbs: resolvedImages,
             description: description || '',
             details: details || '',
-            stockQty: stockQty !== undefined ? stockQty : 10,
-            inStock: inStock !== undefined ? inStock : true,
+            stock: resolvedStock,
+            countInStock: resolvedStock,
+            stockQty: resolvedStock,
+            inStock: inStock !== undefined ? inStock : (resolvedStock > 0),
             featured: featured || false
         });
 
@@ -204,6 +214,20 @@ exports.createProduct = async (req, res, next) => {
 exports.updateProduct = async (req, res, next) => {
     try {
         let updateData = { ...req.body };
+
+        if (updateData.stock !== undefined || updateData.countInStock !== undefined || updateData.stockQty !== undefined) {
+            const resolvedStock = updateData.stock !== undefined
+                ? Number(updateData.stock)
+                : (updateData.countInStock !== undefined
+                    ? Number(updateData.countInStock)
+                    : Number(updateData.stockQty));
+            updateData.stock = resolvedStock;
+            updateData.countInStock = resolvedStock;
+            updateData.stockQty = resolvedStock;
+            if (updateData.inStock === undefined) {
+                updateData.inStock = resolvedStock > 0;
+            }
+        }
 
         if (updateData.priceNum !== undefined && !updateData.price) {
             updateData.price = `R ${Number(updateData.priceNum).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

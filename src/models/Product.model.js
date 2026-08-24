@@ -70,6 +70,16 @@ const ProductSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    stock: {
+        type: Number,
+        default: 10,
+        min: 0
+    },
+    countInStock: {
+        type: Number,
+        default: 10,
+        min: 0
+    },
     stockQty: {
         type: Number,
         default: 10,
@@ -119,6 +129,15 @@ ProductSchema.pre('save', function() {
     // Ensure formatted price
     if (!this.price && this.priceNum !== undefined) {
         this.price = `R ${Number(this.priceNum).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    // Sync stock fields (stock, countInStock, stockQty, inStock)
+    const stockVal = this.stock !== undefined ? Number(this.stock) : (this.countInStock !== undefined ? Number(this.countInStock) : (this.stockQty !== undefined ? Number(this.stockQty) : 10));
+    this.stock = stockVal;
+    this.countInStock = stockVal;
+    this.stockQty = stockVal;
+    if (this.inStock === undefined) {
+        this.inStock = stockVal > 0;
     }
 });
 

@@ -1,7 +1,27 @@
 const Order = require('../models/Order.model');
 const Payment = require('../models/Payment.model');
+const Product = require('../models/Product.model');
 const ApiError = require('../utils/apiError');
 const ApiResponse = require('../utils/apiResponse');
+
+// Helper to locate product for an order item
+const findProductForItem = async (item) => {
+    if (!item) return null;
+    const targetId = item.product || item.productId || item.id || item._id;
+    if (targetId && typeof targetId === 'string' && targetId.match(/^[0-9a-fA-F]{24}$/)) {
+        const prod = await Product.findById(targetId);
+        if (prod) return prod;
+    }
+    if (targetId) {
+        const prod = await Product.findOne({ customId: targetId.toString().toUpperCase() });
+        if (prod) return prod;
+    }
+    if (item.name) {
+        const prod = await Product.findOne({ name: { $regex: new RegExp(`^${item.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } });
+        if (prod) return prod;
+    }
+    return null;
+};
 
 // Generate unique order number
 const generateOrderNumber = () => {
@@ -39,6 +59,32 @@ exports.createOrder = async (req, res, next) => {
             return next(new ApiError(400, 'Valid shipping address is required'));
         }
 
+        // 1. Validate stock availability for all items before placing order
+        const productsToDeduct = [];
+        for (const item of items) {
+            const qtyNeeded = Math.max(1, Number(item.quantity) || 1);
+            const product = await findProductForItem(item);
+
+            if (product) {
+                const currentStock = product.stock !== undefined
+                    ? Number(product.stock)
+                    : (product.countInStock !== undefined
+                        ? Number(product.countInStock)
+                        : (product.stockQty !== undefined ? Number(product.stockQty) : 0));
+
+                if (currentStock < qtyNeeded) {
+                    return next(
+                        new ApiError(
+                            400,
+                            `Insufficient stock for "${product.name}". Required: ${qtyNeeded}, Available: ${currentStock}`
+                        )
+                    );
+                }
+
+                productsToDeduct.push({ product, qtyNeeded, currentStock });
+            }
+        }
+
         const orderNumber = generateOrderNumber();
 
         const order = await Order.create({
@@ -56,6 +102,17 @@ exports.createOrder = async (req, res, next) => {
             orderStatus: 'Processing',
             notes: notes || ''
         });
+
+        // 2. Accurately deduct stock from inventory
+        for (const { product, qtyNeeded, currentStock } of productsToDeduct) {
+            const newStock = Math.max(0, currentStock - qtyNeeded);
+            await Product.findByIdAndUpdate(product._id, {
+                stock: newStock,
+                countInStock: newStock,
+                stockQty: newStock,
+                inStock: newStock > 0
+            });
+        }
 
         // Automatically generate payment record
         await Payment.create({
@@ -211,6 +268,28 @@ exports.updateOrderStatus = async (req, res, next) => {
 
         if (!order) {
             return next(new ApiError(404, `Order not found with id ${req.params.id}`));
+        }
+
+        // If order is being cancelled, restore stock to products
+        if (resolvedStatus === 'Cancelled' && order.orderStatus !== 'Cancelled') {
+            for (const item of order.items) {
+                const qtyToRestore = Math.max(1, Number(item.quantity) || 1);
+                const product = await findProductForItem(item);
+                if (product) {
+                    const currentStock = product.stock !== undefined
+                        ? Number(product.stock)
+                        : (product.countInStock !== undefined
+                            ? Number(product.countInStock)
+                            : (product.stockQty !== undefined ? Number(product.stockQty) : 0));
+                    const newStock = currentStock + qtyToRestore;
+                    await Product.findByIdAndUpdate(product._id, {
+                        stock: newStock,
+                        countInStock: newStock,
+                        stockQty: newStock,
+                        inStock: newStock > 0
+                    });
+                }
+            }
         }
 
         order = await Order.findByIdAndUpdate(order._id, updateData, {

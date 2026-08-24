@@ -27,11 +27,11 @@ const SettingSchema = new mongoose.Schema({
     },
     currency: {
         type: String,
-        default: 'USD'
+        default: 'ZAR'
     },
     currencySymbol: {
         type: String,
-        default: '$'
+        default: 'R'
     },
     socialLinks: {
         instagram: { type: String, default: 'https://instagram.com/mairajewels' },

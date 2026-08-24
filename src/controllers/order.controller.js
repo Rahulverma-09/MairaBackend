@@ -65,7 +65,7 @@ exports.createOrder = async (req, res, next) => {
             customerName: customer.name,
             customerEmail: customer.email,
             amount: order.totalAmount,
-            currency: 'USD',
+            currency: 'ZAR',
             method: paymentMethod,
             status: order.paymentStatus
         });

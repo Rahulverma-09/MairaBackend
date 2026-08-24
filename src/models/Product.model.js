@@ -19,7 +19,7 @@ const ProductSchema = new mongoose.Schema({
     },
     price: {
         type: String,
-        default: '$0.00'
+        default: 'R 0.00'
     },
     priceNum: {
         type: Number,
@@ -118,7 +118,7 @@ ProductSchema.pre('save', function() {
 
     // Ensure formatted price
     if (!this.price && this.priceNum !== undefined) {
-        this.price = `$${Number(this.priceNum).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        this.price = `R ${Number(this.priceNum).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 });
 

@@ -20,7 +20,7 @@ const seedCategories = [
 
 const seedProducts = [
     {
-        name: 'Eternal Solitaire Ring', category: 'Rings', price: '$2,450.00', priceNum: 2450,
+        name: 'Eternal Solitaire Ring', category: 'Rings', price: 'R 2,450.00', priceNum: 2450,
         metal: '18K White Gold', gem: 'Diamond', specs: '18K White Gold • 1.5 Carat Diamond', badge: 'NEW',
         image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80',
         thumbs: [
@@ -32,7 +32,7 @@ const seedProducts = [
         description: 'A timeless solitaire ring featuring an ethically sourced 1.5 carat round brilliant cut diamond.'
     },
     {
-        name: 'Aurelia Gold Band', category: 'Rings', price: '$1,890.00', priceNum: 1890,
+        name: 'Aurelia Gold Band', category: 'Rings', price: 'R 1,890.00', priceNum: 1890,
         metal: '24K Gold', gem: 'Diamond', specs: '24K Pure Gold • Solitaire Diamond Accent', badge: '',
         image: 'https://images.unsplash.com/photo-1603564158650-9b23f9d0b14b?auto=format&fit=crop&w=800&q=80',
         thumbs: [
@@ -43,7 +43,7 @@ const seedProducts = [
         description: 'Impeccably hammered 24K solid gold band, understated elegance designed for everyday luxury.'
     },
     {
-        name: 'Rosée Promise Ring', category: 'Rings', price: '$3,200.00', priceNum: 3200,
+        name: 'Rosée Promise Ring', category: 'Rings', price: 'R 3,200.00', priceNum: 3200,
         metal: 'Rose Gold', gem: 'Diamond', specs: 'Rose Gold • Pink Diamond Halo', badge: 'BESTSELLER',
         image: 'https://images.unsplash.com/photo-1600003014755-ba31aa59c4b6?auto=format&fit=crop&w=800&q=80',
         thumbs: [
@@ -55,7 +55,7 @@ const seedProducts = [
         description: 'Handcrafted rose gold engagement ring wrapped in a delicate pink diamond halo.'
     },
     {
-        name: 'Emerald Royal Ring', category: 'Rings', price: '$1,133.00', priceNum: 1133,
+        name: 'Emerald Royal Ring', category: 'Rings', price: 'R 1,133.00', priceNum: 1133,
         metal: '18K Gold', gem: 'Emerald', specs: '18K Yellow Gold • Royal Emerald Cut', badge: '',
         image: 'https://images.unsplash.com/photo-1598560917505-59a3ad559071?auto=format&fit=crop&w=800&q=80',
         thumbs: [
@@ -65,7 +65,7 @@ const seedProducts = [
         stockQty: 12
     },
     {
-        name: 'Sunburst Fan Earrings', category: 'Earrings', price: '$448.00', priceNum: 448,
+        name: 'Sunburst Fan Earrings', category: 'Earrings', price: 'R 448.00', priceNum: 448,
         metal: '18K Gold', gem: 'Diamond', specs: '18K Yellow Gold • 11.2gm Diamond Drops', badge: 'NEW',
         image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80',
         thumbs: [
@@ -75,7 +75,7 @@ const seedProducts = [
         stockQty: 20
     },
     {
-        name: 'Tree Of Life Drops', category: 'Earrings', price: '$333.00', priceNum: 333,
+        name: 'Tree Of Life Drops', category: 'Earrings', price: 'R 333.00', priceNum: 333,
         metal: '18K Gold', gem: 'Diamond', specs: '18K Gold • 7.2gm Filigree', badge: '',
         image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=80',
         thumbs: [
@@ -85,7 +85,7 @@ const seedProducts = [
         stockQty: 18
     },
     {
-        name: 'Golden Crescent Moons', category: 'Earrings', price: '$558.00', priceNum: 558,
+        name: 'Golden Crescent Moons', category: 'Earrings', price: 'R 558.00', priceNum: 558,
         metal: '18K Gold', gem: 'Diamond', specs: '18K Gold • Celestial Diamond Inlay', badge: '',
         image: 'https://images.unsplash.com/photo-1535632741717-e47896068228?auto=format&fit=crop&w=800&q=80',
         thumbs: [
@@ -95,7 +95,7 @@ const seedProducts = [
         stockQty: 14
     },
     {
-        name: 'Sapphire Heirloom Ring', category: 'Rings', price: '$5,400.00', priceNum: 5400,
+        name: 'Sapphire Heirloom Ring', category: 'Rings', price: 'R 5,400.00', priceNum: 5400,
         metal: '18K Gold', gem: 'Sapphire', specs: '18K Gold • Ceylon Royal Sapphire', badge: 'LIMITED',
         image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80',
         thumbs: [
@@ -195,8 +195,8 @@ const seedData = async () => {
             phone: '083 922 8383',
             address: 'Sandton City / Hyde Park, Johannesburg, South Africa',
             hours: 'Mon – Sat: 09:00 – 18:00 | Sun: 10:00 – 15:00',
-            currency: 'USD',
-            currencySymbol: '$'
+            currency: 'ZAR',
+            currencySymbol: 'R'
         });
 
         console.log('✅ Database successfully seeded with Maira Jewels catalog and credentials!');

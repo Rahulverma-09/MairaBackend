@@ -143,7 +143,7 @@ exports.createProduct = async (req, res, next) => {
         }
 
         const calculatedPriceNum = priceNum !== undefined ? Number(priceNum) : parseFloat(String(price).replace(/[^0-9.]/g, '')) || 0;
-        const formattedPrice = price || `$${calculatedPriceNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        const formattedPrice = price || `R ${calculatedPriceNum.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
         const resolvedImages = (images && images.length > 0)
             ? images
@@ -206,7 +206,7 @@ exports.updateProduct = async (req, res, next) => {
         let updateData = { ...req.body };
 
         if (updateData.priceNum !== undefined && !updateData.price) {
-            updateData.price = `$${Number(updateData.priceNum).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            updateData.price = `R ${Number(updateData.priceNum).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
         if (updateData.images && updateData.images.length > 0) {

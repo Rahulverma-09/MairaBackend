@@ -51,7 +51,7 @@ exports.getDashboardStats = async (req, res, next) => {
             new ApiResponse(200, {
                 metrics: {
                     totalRevenue,
-                    formattedRevenue: `$${totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                    formattedRevenue: `R ${totalRevenue.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                     totalOrders,
                     pendingOrders,
                     totalProducts,

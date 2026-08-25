@@ -22,7 +22,7 @@ exports.getDashboardStats = async (req, res, next) => {
             Order.countDocuments(),
             User.countDocuments({ role: 'customer' }),
             Inquiry.countDocuments({ status: 'unread' }),
-            Order.find().sort('-createdAt').limit(6),
+            Order.find().sort('-_id').limit(6).allowDiskUse(true), // _id sort avoids 32MB memory limit
             Order.find({ paymentStatus: 'Paid' })
         ]);
 
@@ -30,9 +30,10 @@ exports.getDashboardStats = async (req, res, next) => {
         const pendingOrders = await Order.countDocuments({ orderStatus: { $in: ['Pending', 'Processing'] } });
 
         // Category distribution
-        const categoryStats = await Product.aggregate([
-            { $group: { _id: '$category', count: { $sum: 1 } } }
-        ]);
+        const categoryStats = await Product.aggregate(
+            [{ $group: { _id: '$category', count: { $sum: 1 } } }],
+            { allowDiskUse: true } // Prevents 32MB in-memory sort limit
+        );
 
         // Monthly revenue trend (last 6 months)
         const monthlyTrend = await Order.aggregate([
@@ -45,7 +46,7 @@ exports.getDashboardStats = async (req, res, next) => {
                 }
             },
             { $sort: { _id: 1 } }
-        ]);
+        ], { allowDiskUse: true }); // Prevents 32MB in-memory sort limit
 
         res.status(200).json(
             new ApiResponse(200, {
@@ -67,3 +68,4 @@ exports.getDashboardStats = async (req, res, next) => {
         next(error);
     }
 };
+

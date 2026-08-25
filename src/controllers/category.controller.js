@@ -23,7 +23,9 @@ const findCategoryByIdOrCustomId = async (id) => {
 // @access  Public
 exports.getCategories = async (req, res, next) => {
     try {
-        const categories = await Category.find({ isActive: true }).sort('order createdAt');
+        const categories = await Category.find({ isActive: true })
+            .sort({ order: 1, _id: 1 }) // _id as tiebreaker keeps sort partially indexed
+            .allowDiskUse(true); // Prevents MongoDB 32MB in-memory sort limit
 
         // Fetch counts in parallel
         const categoriesWithCount = await Promise.all(
@@ -151,3 +153,4 @@ exports.deleteCategory = async (req, res, next) => {
         next(error);
     }
 };
+

@@ -31,9 +31,10 @@ exports.getPayments = async (req, res, next) => {
 
         const total = await Payment.countDocuments(query);
         const payments = await Payment.find(query)
-            .sort('-createdAt')
+            .sort('-_id') // _id is always indexed — avoids 32MB in-memory sort limit
             .skip(skip)
-            .limit(limitNum);
+            .limit(limitNum)
+            .allowDiskUse(true); // Prevents MongoDB sort memory crash
 
         res.status(200).json(
             new ApiResponse(200, {
@@ -73,3 +74,4 @@ exports.updatePaymentStatus = async (req, res, next) => {
         next(error);
     }
 };
+

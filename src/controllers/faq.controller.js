@@ -39,7 +39,9 @@ exports.getFaqs = async (req, res, next) => {
             ];
         }
 
-        const faqs = await FAQ.find(query).sort('order createdAt');
+        const faqs = await FAQ.find(query)
+            .sort({ order: 1, _id: 1 }) // _id as tiebreaker keeps sort partially indexed
+            .allowDiskUse(true); // Prevents MongoDB 32MB in-memory sort limit
 
         const formattedFaqs = faqs.map(f => ({
             ...f.toObject(),
@@ -168,3 +170,4 @@ exports.deleteFaq = async (req, res, next) => {
         next(error);
     }
 };
+

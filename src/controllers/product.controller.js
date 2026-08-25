@@ -41,7 +41,7 @@ exports.getProducts = async (req, res, next) => {
         }
 
         // Sorting
-        let sortBy = '-createdAt';
+        let sortBy = '-_id'; // Default: use _id index — avoids 32MB in-memory sort limit
         if (sort === 'price-asc') sortBy = 'priceNum';
         if (sort === 'price-desc') sortBy = '-priceNum';
         if (sort === 'name-asc') sortBy = 'name';
@@ -56,7 +56,8 @@ exports.getProducts = async (req, res, next) => {
         const products = await Product.find(query)
             .sort(sortBy)
             .skip(skip)
-            .limit(limitNum);
+            .limit(limitNum)
+            .allowDiskUse(true); // Prevents MongoDB 32MB in-memory sort limit crash
 
         res.status(200).json(
             new ApiResponse(200, {

@@ -145,7 +145,9 @@ exports.getMyOrders = async (req, res, next) => {
                 { user: req.user.id },
                 { 'customer.email': req.user.email }
             ]
-        }).sort('-createdAt');
+        })
+        .sort('-_id') // _id is always indexed — avoids 32MB in-memory sort limit
+        .allowDiskUse(true); // belt-and-suspenders fallback
 
         res.status(200).json(
             new ApiResponse(200, { count: orders.length, orders }, 'My orders retrieved')
@@ -186,9 +188,10 @@ exports.getAllOrders = async (req, res, next) => {
 
         const total = await Order.countDocuments(query);
         const orders = await Order.find(query)
-            .sort('-createdAt')
+            .sort('-_id') // _id is always indexed — avoids 32MB in-memory sort limit
             .skip(skip)
-            .limit(limitNum);
+            .limit(limitNum)
+            .allowDiskUse(true); // Prevents MongoDB sort memory crash for any field-based sort
 
         const formattedOrders = orders.map(order => ({
             ...order.toObject(),
@@ -330,3 +333,4 @@ exports.deleteOrder = async (req, res, next) => {
         next(error);
     }
 };
+

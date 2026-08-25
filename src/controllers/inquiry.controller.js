@@ -79,7 +79,9 @@ exports.getInquiries = async (req, res, next) => {
             ];
         }
 
-        const inquiries = await Inquiry.find(query).sort('-createdAt');
+        const inquiries = await Inquiry.find(query)
+            .sort('-_id') // _id is always indexed — avoids 32MB in-memory sort limit
+            .allowDiskUse(true); // Prevents MongoDB sort memory crash
 
         const formattedInquiries = inquiries.map(inq => ({
             ...inq.toObject(),
@@ -150,3 +152,4 @@ exports.deleteInquiry = async (req, res, next) => {
         next(error);
     }
 };
+

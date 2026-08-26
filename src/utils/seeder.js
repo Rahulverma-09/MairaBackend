@@ -21,7 +21,7 @@ const seedCategories = [
 const seedProducts = [
     {
         name: 'Eternal Solitaire Ring', category: 'Rings', price: 'R 2,450.00', priceNum: 2450,
-        metal: '18K White Gold', gem: 'Diamond', specs: '18K White Gold • 1.5 Carat Diamond', badge: 'NEW',
+        metal: '18K White Gold', gem: 'Diamond', specs: '18K White Gold • 1.5 Carat Diamond', color: 'White Gold', sizes: '5, 6, 7, 8, 9', badge: 'NEW',
         image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80',
         thumbs: [
             'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80',
@@ -33,7 +33,7 @@ const seedProducts = [
     },
     {
         name: 'Aurelia Gold Band', category: 'Rings', price: 'R 1,890.00', priceNum: 1890,
-        metal: '24K Gold', gem: 'Diamond', specs: '24K Pure Gold • Solitaire Diamond Accent', badge: '',
+        metal: '24K Gold', gem: 'Diamond', specs: '24K Pure Gold • Solitaire Diamond Accent', color: 'Yellow Gold', sizes: '5, 6, 7, 8', badge: '',
         image: 'https://images.unsplash.com/photo-1603564158650-9b23f9d0b14b?auto=format&fit=crop&w=800&q=80',
         thumbs: [
             'https://images.unsplash.com/photo-1603564158650-9b23f9d0b14b?auto=format&fit=crop&w=800&q=80',
@@ -44,7 +44,7 @@ const seedProducts = [
     },
     {
         name: 'Rosée Promise Ring', category: 'Rings', price: 'R 3,200.00', priceNum: 3200,
-        metal: 'Rose Gold', gem: 'Diamond', specs: 'Rose Gold • Pink Diamond Halo', badge: 'BESTSELLER',
+        metal: 'Rose Gold', gem: 'Diamond', specs: 'Rose Gold • Pink Diamond Halo', color: 'Rose Gold', sizes: '5, 6, 7', badge: 'BESTSELLER',
         image: 'https://images.unsplash.com/photo-1600003014755-ba31aa59c4b6?auto=format&fit=crop&w=800&q=80',
         thumbs: [
             'https://images.unsplash.com/photo-1600003014755-ba31aa59c4b6?auto=format&fit=crop&w=800&q=80',
@@ -56,7 +56,7 @@ const seedProducts = [
     },
     {
         name: 'Emerald Royal Ring', category: 'Rings', price: 'R 1,133.00', priceNum: 1133,
-        metal: '18K Gold', gem: 'Emerald', specs: '18K Yellow Gold • Royal Emerald Cut', badge: '',
+        metal: '18K Gold', gem: 'Emerald', specs: '18K Yellow Gold • Royal Emerald Cut', color: 'Yellow Gold', sizes: '6, 7, 8, 9', badge: '',
         image: 'https://images.unsplash.com/photo-1598560917505-59a3ad559071?auto=format&fit=crop&w=800&q=80',
         thumbs: [
             'https://images.unsplash.com/photo-1598560917505-59a3ad559071?auto=format&fit=crop&w=800&q=80',
@@ -66,7 +66,7 @@ const seedProducts = [
     },
     {
         name: 'Sunburst Fan Earrings', category: 'Earrings', price: 'R 448.00', priceNum: 448,
-        metal: '18K Gold', gem: 'Diamond', specs: '18K Yellow Gold • 11.2gm Diamond Drops', badge: 'NEW',
+        metal: '18K Gold', gem: 'Diamond', specs: '18K Yellow Gold • 11.2gm Diamond Drops', color: 'Yellow Gold', sizes: 'One Size', badge: 'NEW',
         image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80',
         thumbs: [
             'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80',
@@ -76,7 +76,7 @@ const seedProducts = [
     },
     {
         name: 'Tree Of Life Drops', category: 'Earrings', price: 'R 333.00', priceNum: 333,
-        metal: '18K Gold', gem: 'Diamond', specs: '18K Gold • 7.2gm Filigree', badge: '',
+        metal: '18K Gold', gem: 'Diamond', specs: '18K Gold • 7.2gm Filigree', color: 'Yellow Gold', sizes: 'One Size', badge: '',
         image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=80',
         thumbs: [
             'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=80',
@@ -86,7 +86,7 @@ const seedProducts = [
     },
     {
         name: 'Golden Crescent Moons', category: 'Earrings', price: 'R 558.00', priceNum: 558,
-        metal: '18K Gold', gem: 'Diamond', specs: '18K Gold • Celestial Diamond Inlay', badge: '',
+        metal: '18K Gold', gem: 'Diamond', specs: '18K Gold • Celestial Diamond Inlay', color: 'Yellow Gold', sizes: 'One Size', badge: '',
         image: 'https://images.unsplash.com/photo-1535632741717-e47896068228?auto=format&fit=crop&w=800&q=80',
         thumbs: [
             'https://images.unsplash.com/photo-1535632741717-e47896068228?auto=format&fit=crop&w=800&q=80',
@@ -96,7 +96,7 @@ const seedProducts = [
     },
     {
         name: 'Sapphire Heirloom Ring', category: 'Rings', price: 'R 5,400.00', priceNum: 5400,
-        metal: '18K Gold', gem: 'Sapphire', specs: '18K Gold • Ceylon Royal Sapphire', badge: 'LIMITED',
+        metal: '18K Gold', gem: 'Sapphire', specs: '18K Gold • Ceylon Royal Sapphire', color: 'Yellow Gold', sizes: '6, 7, 8', badge: 'LIMITED',
         image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80',
         thumbs: [
             'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80',

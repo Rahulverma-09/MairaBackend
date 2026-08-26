@@ -36,7 +36,9 @@ exports.getProducts = async (req, res, next) => {
                 { details: { $regex: search, $options: 'i' } },
                 { specs: { $regex: search, $options: 'i' } },
                 { category: { $regex: search, $options: 'i' } },
-                { badge: { $regex: search, $options: 'i' } }
+                { badge: { $regex: search, $options: 'i' } },
+                { color: { $regex: search, $options: 'i' } },
+                { sizes: { $regex: search, $options: 'i' } }
             ];
         }
 
@@ -128,6 +130,10 @@ exports.createProduct = async (req, res, next) => {
             metal,
             gem,
             specs,
+            color,
+            colour,
+            sizes,
+            availableSizes,
             badge,
             image,
             images,
@@ -179,6 +185,9 @@ exports.createProduct = async (req, res, next) => {
                 ? Number(countInStock)
                 : (stockQty !== undefined ? Number(stockQty) : 10));
 
+        const resolvedColor = color !== undefined ? color : (colour !== undefined ? colour : '');
+        const resolvedSizes = sizes !== undefined ? sizes : (availableSizes !== undefined ? availableSizes : '');
+
         const product = await Product.create({
             customId: customId || id,
             name,
@@ -188,6 +197,8 @@ exports.createProduct = async (req, res, next) => {
             metal: resolvedMetal,
             gem: resolvedGem,
             specs: specs || '',
+            color: resolvedColor,
+            sizes: resolvedSizes,
             badge: badge || '',
             image: resolvedImages[0],
             images: resolvedImages,
@@ -215,6 +226,13 @@ exports.createProduct = async (req, res, next) => {
 exports.updateProduct = async (req, res, next) => {
     try {
         let updateData = { ...req.body };
+
+        if (updateData.colour !== undefined && updateData.color === undefined) {
+            updateData.color = updateData.colour;
+        }
+        if (updateData.availableSizes !== undefined && updateData.sizes === undefined) {
+            updateData.sizes = updateData.availableSizes;
+        }
 
         if (updateData.stock !== undefined || updateData.countInStock !== undefined || updateData.stockQty !== undefined) {
             const resolvedStock = updateData.stock !== undefined

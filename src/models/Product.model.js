@@ -41,6 +41,16 @@ const ProductSchema = new mongoose.Schema({
         default: '',
         trim: true
     },
+    color: {
+        type: String,
+        default: '',
+        trim: true
+    },
+    sizes: {
+        type: String,
+        default: '',
+        trim: true
+    },
     badge: {
         type: String,
         default: '',
@@ -141,9 +151,18 @@ ProductSchema.pre('save', function() {
     }
 });
 
+// Virtual fields for colour and availableSizes aliases
+ProductSchema.virtual('colour')
+    .get(function() { return this.color; })
+    .set(function(val) { this.color = val; });
+
+ProductSchema.virtual('availableSizes')
+    .get(function() { return this.sizes; })
+    .set(function(val) { this.sizes = val; });
+
 // Indexes for fast lookup & filtering
 ProductSchema.index({ customId: 1 });
-ProductSchema.index({ name: 'text', description: 'text', specs: 'text' });
+ProductSchema.index({ name: 'text', description: 'text', specs: 'text', color: 'text', sizes: 'text' });
 ProductSchema.index({ category: 1, priceNum: 1 });
 ProductSchema.index({ featured: 1 });
 ProductSchema.index({ badge: 1 });

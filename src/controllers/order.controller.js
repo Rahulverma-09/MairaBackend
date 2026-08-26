@@ -33,6 +33,9 @@ const generateOrderNumber = () => {
 // @desc    Create new order
 // @route   POST /api/v1/orders
 // @access  Public / Protected (Optional token)
+// @desc    Create new order
+// @route   POST /api/v1/orders
+// @access  Public / Protected (Optional token)
 exports.createOrder = async (req, res, next) => {
     try {
         const {
@@ -42,12 +45,15 @@ exports.createOrder = async (req, res, next) => {
             subtotal,
             shippingFee = 0,
             discount = 0,
+            total,
             totalAmount,
             paymentMethod = 'Credit Card',
+            status,
+            orderStatus,
             notes
         } = req.body;
 
-        if (!items || items.length === 0) {
+        if (!items || !Array.isArray(items) || items.length === 0) {
             return next(new ApiError(400, 'Cannot place order with empty items'));
         }
 
@@ -55,14 +61,47 @@ exports.createOrder = async (req, res, next) => {
             return next(new ApiError(400, 'Customer name and email are required'));
         }
 
-        if (!shippingAddress || !shippingAddress.street || !shippingAddress.city) {
-            return next(new ApiError(400, 'Valid shipping address is required'));
+        // Normalize shipping address (fallback to customer.address or defaults if not structured object)
+        let resolvedShippingAddress = shippingAddress;
+        if (!resolvedShippingAddress || typeof resolvedShippingAddress !== 'object' || !resolvedShippingAddress.street) {
+            const fullAddressStr = (typeof shippingAddress === 'string' ? shippingAddress : customer.address) || '123 Main Street';
+            resolvedShippingAddress = {
+                street: fullAddressStr,
+                city: 'Cape Town',
+                province: 'Western Cape',
+                postalCode: '8001',
+                country: 'South Africa',
+                deliveryMethod: 'Standard'
+            };
         }
+
+        // Normalize items array
+        const normalizedItems = items.map(item => {
+            const numPrice = typeof item.price === 'number'
+                ? item.price
+                : (parseFloat(String(item.price || '').replace(/[^0-9.]/g, '')) || 0);
+            const strPrice = typeof item.price === 'string' && item.price.startsWith('R')
+                ? item.price
+                : `R ${numPrice.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            return {
+                ...item,
+                name: item.name || 'Jewellery Item',
+                price: strPrice,
+                priceNum: numPrice,
+                quantity: Math.max(1, Number(item.quantity) || 1),
+                color: item.color || item.colour || '',
+                colour: item.colour || item.color || '',
+                size: item.size || item.sizes || '',
+                sizes: item.sizes || item.size || '',
+                image: item.image || item.img || ''
+            };
+        });
 
         // 1. Validate stock availability for all items before placing order
         const productsToDeduct = [];
-        for (const item of items) {
-            const qtyNeeded = Math.max(1, Number(item.quantity) || 1);
+        for (const item of normalizedItems) {
+            const qtyNeeded = item.quantity;
             const product = await findProductForItem(item);
 
             if (product) {
@@ -85,21 +124,27 @@ exports.createOrder = async (req, res, next) => {
             }
         }
 
+        const calculatedSubtotal = Number(subtotal) || normalizedItems.reduce((acc, i) => acc + (i.priceNum * i.quantity), 0);
+        const resolvedTotalAmount = totalAmount !== undefined
+            ? Number(totalAmount)
+            : (total !== undefined ? Number(total) : (calculatedSubtotal + Number(shippingFee) - Number(discount)));
+
+        const resolvedStatus = orderStatus || status || 'Processing';
         const orderNumber = generateOrderNumber();
 
         const order = await Order.create({
             orderNumber,
             user: req.user ? req.user.id : null,
             customer,
-            shippingAddress,
-            items,
-            subtotal: Number(subtotal) || items.reduce((acc, i) => acc + (i.priceNum * i.quantity), 0),
+            shippingAddress: resolvedShippingAddress,
+            items: normalizedItems,
+            subtotal: calculatedSubtotal,
             shippingFee: Number(shippingFee),
             discount: Number(discount),
-            totalAmount: Number(totalAmount) || (Number(subtotal) + Number(shippingFee) - Number(discount)),
-            paymentMethod,
+            totalAmount: resolvedTotalAmount,
+            paymentMethod: paymentMethod || 'Credit Card',
             paymentStatus: paymentMethod === 'Cash on Delivery' ? 'Pending' : 'Paid',
-            orderStatus: 'Processing',
+            orderStatus: resolvedStatus,
             notes: notes || ''
         });
 
@@ -123,13 +168,17 @@ exports.createOrder = async (req, res, next) => {
             customerEmail: customer.email,
             amount: order.totalAmount,
             currency: 'ZAR',
-            method: paymentMethod,
+            method: paymentMethod || 'Credit Card',
             status: order.paymentStatus
         });
 
-        res.status(201).json(
-            new ApiResponse(201, { order }, 'Order placed successfully')
-        );
+        res.status(201).json({
+            success: true,
+            statusCode: 201,
+            message: 'Order placed successfully',
+            data: order,
+            order
+        });
     } catch (error) {
         next(error);
     }
@@ -150,7 +199,7 @@ exports.getMyOrders = async (req, res, next) => {
         .allowDiskUse(true); // belt-and-suspenders fallback
 
         res.status(200).json(
-            new ApiResponse(200, { count: orders.length, orders }, 'My orders retrieved')
+            new ApiResponse(200, { count: orders.length, orders, data: orders }, 'My orders retrieved')
         );
     } catch (error) {
         next(error);
@@ -201,15 +250,17 @@ exports.getAllOrders = async (req, res, next) => {
             date: order.createdAt
         }));
 
-        res.status(200).json(
-            new ApiResponse(200, {
-                total,
-                count: formattedOrders.length,
-                page: pageNum,
-                pages: Math.ceil(total / limitNum),
-                orders: formattedOrders
-            }, 'Orders retrieved')
-        );
+        res.status(200).json({
+            success: true,
+            statusCode: 200,
+            message: 'Orders retrieved',
+            data: formattedOrders,
+            count: formattedOrders.length,
+            total,
+            page: pageNum,
+            pages: Math.ceil(total / limitNum),
+            orders: formattedOrders
+        });
     } catch (error) {
         next(error);
     }

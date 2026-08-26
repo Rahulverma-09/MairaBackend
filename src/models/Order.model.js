@@ -7,9 +7,13 @@ const OrderItemSchema = new mongoose.Schema({
     },
     id: { type: String }, // Legacy item id support (e.g. item-1)
     name: { type: String, required: true },
-    price: { type: String, required: true },
-    priceNum: { type: Number, required: true },
+    price: { type: mongoose.Schema.Types.Mixed, required: true },
+    priceNum: { type: Number },
     quantity: { type: Number, required: true, min: 1, default: 1 },
+    color: { type: String, default: '' },
+    colour: { type: String, default: '' },
+    size: { type: String, default: '' },
+    sizes: { type: String, default: '' },
     image: { type: String, default: '' },
     specs: { type: String, default: '' }
 });
@@ -27,15 +31,16 @@ const OrderSchema = new mongoose.Schema({
     customer: {
         name: { type: String, required: true },
         email: { type: String, required: true },
-        phone: { type: String, default: '' }
+        phone: { type: String, default: '' },
+        address: { type: String, default: '' }
     },
     shippingAddress: {
-        street: { type: String, required: true },
-        city: { type: String, required: true },
+        street: { type: String, default: 'N/A' },
+        city: { type: String, default: 'N/A' },
         province: { type: String, default: 'Gauteng' },
-        postalCode: { type: String, required: true },
+        postalCode: { type: String, default: '0000' },
         country: { type: String, default: 'South Africa' },
-        deliveryMethod: { type: String, default: 'Courier Guy (3-4 Days)' }
+        deliveryMethod: { type: String, default: 'Standard Delivery' }
     },
     items: [OrderItemSchema],
     subtotal: {
@@ -56,17 +61,16 @@ const OrderSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['Credit Card', 'Debit Card', 'Instant EFT', 'PayFlex', 'Cash on Delivery'],
         default: 'Credit Card'
     },
     paymentStatus: {
         type: String,
-        enum: ['Paid', 'Pending', 'Failed', 'Refunded'],
+        enum: ['Paid', 'Pending', 'Failed', 'Refunded', 'paid', 'pending', 'failed', 'refunded'],
         default: 'Paid'
     },
     orderStatus: {
         type: String,
-        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'],
         default: 'Processing'
     },
     trackingNumber: {
@@ -78,8 +82,19 @@ const OrderSchema = new mongoose.Schema({
         default: ''
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 });
+
+// Virtual field aliases
+OrderSchema.virtual('total')
+    .get(function() { return this.totalAmount; })
+    .set(function(v) { this.totalAmount = Number(v); });
+
+OrderSchema.virtual('status')
+    .get(function() { return (this.orderStatus || 'processing').toLowerCase(); })
+    .set(function(v) { this.orderStatus = v; });
 
 // Indexes for order lookup and filtering
 OrderSchema.index({ 'customer.email': 1 });
